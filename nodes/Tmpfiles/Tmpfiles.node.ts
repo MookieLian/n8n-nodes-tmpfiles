@@ -1,5 +1,9 @@
 import { type INodeType, type INodeTypeDescription, type IExecuteFunctions, type INodeExecutionData, type IDataObject, IHttpRequestOptions } from 'n8n-workflow';
-declare const Buffer: any;
+type BinaryBuffer = { length: number };
+declare const Buffer: {
+    from(input: string, encoding: string): BinaryBuffer;
+    concat(chunks: Array<unknown>): BinaryBuffer;
+};
 
 export class Tmpfiles implements INodeType {
 	description: INodeTypeDescription = {
@@ -63,7 +67,7 @@ export class Tmpfiles implements INodeType {
 			const closing = `\r\n--${boundary}--\r\n`;
 			const bodyBuffer = Buffer.concat([
 				Buffer.from(preamble, 'utf8'),
-				buffer,
+				buffer as unknown as BinaryBuffer,
 				Buffer.from(closing, 'utf8'),
 			]);
 
