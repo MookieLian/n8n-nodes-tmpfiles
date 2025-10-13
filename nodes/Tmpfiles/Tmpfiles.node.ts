@@ -1,4 +1,4 @@
-import { type INodeType, type INodeTypeDescription, type IExecuteFunctions, type INodeExecutionData, type IDataObject } from 'n8n-workflow';
+import { type INodeType, type INodeTypeDescription, type IExecuteFunctions, type INodeExecutionData, type IDataObject, IHttpRequestOptions } from 'n8n-workflow';
 
 export class Tmpfiles implements INodeType {
 	description: INodeTypeDescription = {
@@ -68,7 +68,7 @@ export class Tmpfiles implements INodeType {
 				},
 			};
 
-			const response = await this.helpers.httpRequest(requestOptions as any);
+			const response = await this.helpers.httpRequest(requestOptions as IHttpRequestOptions);
 
 			const executionData = this.helpers.constructExecutionMetaData(
 				this.helpers.returnJsonArray(response as unknown as IDataObject),
