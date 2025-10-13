@@ -1,10 +1,6 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tmpfiles = void 0;
-const form_data_1 = __importDefault(require("form-data"));
 class Tmpfiles {
     constructor() {
         this.description = {
@@ -56,20 +52,20 @@ class Tmpfiles {
             const buffer = await this.helpers.getBinaryDataBuffer(i, binaryDataFieldName);
             const fileName = (_a = binaryData.fileName) !== null && _a !== void 0 ? _a : 'file';
             const mimeType = (_b = binaryData.mimeType) !== null && _b !== void 0 ? _b : 'application/octet-stream';
-            const form = new form_data_1.default();
-            form.append('file', buffer, {
-                filename: fileName,
-                contentType: mimeType,
-            });
-            const response = await this.helpers.httpRequest({
+            const requestOptions = {
                 method: 'POST',
                 url: 'https://tmpfiles.org/api/v1/upload',
-                body: form.getBuffer(),
-                headers: {
-                    ...form.getHeaders(),
-                    'Content-Length': form.getLengthSync(),
+                formData: {
+                    file: {
+                        value: buffer,
+                        options: {
+                            filename: fileName,
+                            contentType: mimeType,
+                        },
+                    },
                 },
-            });
+            };
+            const response = await this.helpers.httpRequest(requestOptions);
             const executionData = this.helpers.constructExecutionMetaData(this.helpers.returnJsonArray(response), { itemData: { item: i } });
             returnData.push(...executionData);
         }

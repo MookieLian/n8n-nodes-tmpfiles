@@ -1,12 +1,20 @@
 {
     "name": "n8n-nodes-tmpfiles",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "n8n Community node to upload files to Tmpfiles",
     "license": "MIT",
     "homepage": "https://tmpfiles.org",
-    "keywords": ["n8n-community-node-package"],
-    "author": { "name": "MookieLian", "email": "mookielianhd@gmail.com" },
-    "repository": { "type": "git", "url": "https://github.com/MookieLian/n8n-nodes-tmpfiles" },
+    "keywords": [
+        "n8n-community-node-package"
+    ],
+    "author": {
+        "name": "MookieLian",
+        "email": "mookielianhd@gmail.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/MookieLian/n8n-nodes-tmpfiles"
+    },
     "scripts": {
         "build": "n8n-node build",
         "build:watch": "tsc --watch",
@@ -16,11 +24,15 @@
         "release": "n8n-node release",
         "prepublishOnly": "n8n-node prerelease"
     },
-    "files": ["dist"],
+    "files": [
+        "dist"
+    ],
     "n8n": {
         "n8nNodesApiVersion": 1,
         "credentials": [],
-        "nodes": ["dist/nodes/Tmpfiles/Tmpfiles.node.js"]
+        "nodes": [
+            "dist/nodes/Tmpfiles/Tmpfiles.node.js"
+        ]
     },
     "devDependencies": {
         "@n8n/node-cli": "*",
@@ -29,5 +41,7 @@
         "release-it": "^19.0.4",
         "typescript": "5.9.2"
     },
-    "peerDependencies": { "n8n-workflow": "*" }
+    "peerDependencies": {
+        "n8n-workflow": "*"
+    }
 }

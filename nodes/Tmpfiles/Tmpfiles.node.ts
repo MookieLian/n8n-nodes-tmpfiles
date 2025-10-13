@@ -1,5 +1,4 @@
 import { type INodeType, type INodeTypeDescription, type IExecuteFunctions, type INodeExecutionData, type IDataObject } from 'n8n-workflow';
-import FormData from 'form-data';
 
 export class Tmpfiles implements INodeType {
 	description: INodeTypeDescription = {
@@ -53,21 +52,23 @@ export class Tmpfiles implements INodeType {
 			const fileName = binaryData.fileName ?? 'file';
 			const mimeType = binaryData.mimeType ?? 'application/octet-stream';
 
-			const form = new FormData();
-			form.append('file', buffer, {
-				filename: fileName,
-				contentType: mimeType,
-			});
 
-			const response = await this.helpers.httpRequest({
+			const requestOptions: unknown = {
 				method: 'POST',
 				url: 'https://tmpfiles.org/api/v1/upload',
-				body: form.getBuffer(),
-				headers: {
-					...form.getHeaders(),
-					'Content-Length': form.getLengthSync(),
+				// Use multipart form-data without external dependencies
+				formData: {
+					file: {
+						value: buffer,
+						options: {
+							filename: fileName,
+							contentType: mimeType,
+						},
+					},
 				},
-			});
+			};
+
+			const response = await this.helpers.httpRequest(requestOptions as any);
 
 			const executionData = this.helpers.constructExecutionMetaData(
 				this.helpers.returnJsonArray(response as unknown as IDataObject),
