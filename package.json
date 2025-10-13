@@ -6,7 +6,7 @@
   "homepage": "https://tmpfiles.org",
   "keywords": ["n8n-community-node-package"],
   "author": { "name": "MookieLian", "email": "mookielianhd@gmail.com" },
-  "repository": { "type": "git", "url": "https://github.com/mookielian/n8n-nodes-tmpfiles" },
+  "repository": { "type": "git", "url": "https://github.com/MookieLian/n8n-nodes-tmpfiles" },
   "scripts": {
     "build": "n8n-node build",
     "build:watch": "tsc --watch",
