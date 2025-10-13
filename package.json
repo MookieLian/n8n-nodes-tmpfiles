@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-tmpfiles",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "n8n Community node to upload files to Tmpfiles",
   "license": "MIT",
   "homepage": "https://tmpfiles.org",
