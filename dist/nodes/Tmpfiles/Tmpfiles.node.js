@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tmpfiles = void 0;
+const n8n_workflow_1 = require("n8n-workflow");
 class Tmpfiles {
     constructor() {
         this.description = {
@@ -47,36 +48,48 @@ class Tmpfiles {
         const items = this.getInputData();
         const returnData = [];
         for (let i = 0; i < items.length; i++) {
-            const binaryDataFieldName = this.getNodeParameter('binaryDataFieldName', i);
-            const binaryData = this.helpers.assertBinaryData(i, binaryDataFieldName);
-            const buffer = await this.helpers.getBinaryDataBuffer(i, binaryDataFieldName);
-            const fileName = (_a = binaryData.fileName) !== null && _a !== void 0 ? _a : 'file';
-            const mimeType = (_b = binaryData.mimeType) !== null && _b !== void 0 ? _b : 'application/octet-stream';
-            const boundary = `----n8nFormBoundary${Date.now()}`;
-            const preamble = `--${boundary}\r\n` +
-                `Content-Disposition: form-data; name="file"; filename="${fileName}"\r\n` +
-                `Content-Type: ${mimeType}\r\n\r\n`;
-            const closing = `\r\n--${boundary}--\r\n`;
-            const bodyBuffer = Buffer.concat([
-                Buffer.from(preamble, 'utf8'),
-                buffer,
-                Buffer.from(closing, 'utf8'),
-            ]);
-            const requestOptions = {
-                method: 'POST',
-                url: 'https://tmpfiles.org/api/v1/upload',
-                headers: {
-                    'Content-Type': `multipart/form-data; boundary=${boundary}`,
-                    'Content-Length': bodyBuffer.length,
-                },
-                body: bodyBuffer,
-            };
-            const response = await this.helpers.httpRequest(requestOptions);
-            const executionData = this.helpers.constructExecutionMetaData(this.helpers.returnJsonArray(response), { itemData: { item: i } });
-            returnData.push(...executionData);
+            try {
+                const binaryDataFieldName = this.getNodeParameter('binaryDataFieldName', i);
+                const binaryData = this.helpers.assertBinaryData(i, binaryDataFieldName);
+                const buffer = await this.helpers.getBinaryDataBuffer(i, binaryDataFieldName);
+                const fileName = (_a = binaryData.fileName) !== null && _a !== void 0 ? _a : 'file';
+                const mimeType = (_b = binaryData.mimeType) !== null && _b !== void 0 ? _b : 'application/octet-stream';
+                const boundary = `----n8nFormBoundary${Date.now()}`;
+                const preamble = `--${boundary}\r\n` +
+                    `Content-Disposition: form-data; name="file"; filename="${fileName}"\r\n` +
+                    `Content-Type: ${mimeType}\r\n\r\n`;
+                const closing = `\r\n--${boundary}--\r\n`;
+                const bodyBuffer = Buffer.concat([
+                    Buffer.from(preamble, 'utf8'),
+                    buffer,
+                    Buffer.from(closing, 'utf8'),
+                ]);
+                const requestOptions = {
+                    method: 'POST',
+                    url: 'https://tmpfiles.org/api/v1/upload',
+                    headers: {
+                        'Content-Type': `multipart/form-data; boundary=${boundary}`,
+                        'Content-Length': bodyBuffer.length,
+                    },
+                    body: bodyBuffer,
+                };
+                const response = await this.helpers.httpRequest(requestOptions);
+                const executionData = this.helpers.constructExecutionMetaData(this.helpers.returnJsonArray(response), { itemData: { item: i } });
+                returnData.push(...executionData);
+            }
+            catch (error) {
+                if (this.continueOnFail()) {
+                    const executionData = this.helpers.constructExecutionMetaData(this.helpers.returnJsonArray({ error: error.message }), { itemData: { item: i } });
+                    returnData.push(...executionData);
+                    continue;
+                }
+                throw new n8n_workflow_1.NodeOperationError(this.getNode(), String(error), { itemIndex: i });
+            }
         }
         return [returnData];
     }
 }
 exports.Tmpfiles = Tmpfiles;
+exports.default = Tmpfiles;
+module.exports = { Tmpfiles };
 //# sourceMappingURL=Tmpfiles.node.js.map

@@ -3,3 +3,4 @@ export declare class Tmpfiles implements INodeType {
     description: INodeTypeDescription;
     execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]>;
 }
+export default Tmpfiles;

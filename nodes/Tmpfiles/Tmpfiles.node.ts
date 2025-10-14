@@ -1,9 +1,11 @@
-import { type INodeType, type INodeTypeDescription, type IExecuteFunctions, type INodeExecutionData, type IDataObject, IHttpRequestOptions } from 'n8n-workflow';
+import { type INodeType, type INodeTypeDescription, type IExecuteFunctions, type INodeExecutionData, type IDataObject, IHttpRequestOptions, NodeOperationError } from 'n8n-workflow';
 type BinaryBuffer = { length: number };
 declare const Buffer: {
     from(input: string, encoding: string): BinaryBuffer;
     concat(chunks: Array<unknown>): BinaryBuffer;
 };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const module: any;
 
 export class Tmpfiles implements INodeType {
 	description: INodeTypeDescription = {
@@ -50,6 +52,7 @@ export class Tmpfiles implements INodeType {
 		const returnData: INodeExecutionData[] = [];
 
 		for (let i = 0; i < items.length; i++) {
+			try {
 			const binaryDataFieldName = this.getNodeParameter('binaryDataFieldName', i) as string;
 
 			const binaryData = this.helpers.assertBinaryData(i, binaryDataFieldName);
@@ -88,8 +91,24 @@ export class Tmpfiles implements INodeType {
 				{ itemData: { item: i } },
 			);
 			returnData.push(...executionData);
+			} catch (error) {
+				if (this.continueOnFail()) {
+					const executionData = this.helpers.constructExecutionMetaData(
+						this.helpers.returnJsonArray({ error: (error as Error).message }),
+						{ itemData: { item: i } },
+					);
+					returnData.push(...executionData);
+					continue;
+				}
+				throw new NodeOperationError(this.getNode(), String(error), { itemIndex: i });
+			}
 		}
 
 		return [returnData];
 	}
 }
+
+// Ensure compatibility with n8n loader in isolated VM
+export default Tmpfiles;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(module as any).exports = { Tmpfiles };
