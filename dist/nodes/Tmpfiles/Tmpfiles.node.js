@@ -10,20 +10,52 @@ class Tmpfiles {
             icon: 'file:tmpfilesLogo_main.svg',
             group: ['transform'],
             version: 1,
-            subtitle: 'File Upload',
+            subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
             description: 'Upload files to Tmpfiles and get a temporary URL',
             defaults: {
                 name: 'Tmpfiles',
             },
             usableAsTool: true,
-            inputs: ['main'],
-            outputs: ['main'],
+            inputs: [n8n_workflow_1.NodeConnectionTypes.Main],
+            outputs: [n8n_workflow_1.NodeConnectionTypes.Main],
             credentials: [],
             requestDefaults: {
                 baseURL: 'https://tmpfiles.org/api/v1/upload',
                 method: 'POST',
             },
             properties: [
+                {
+                    displayName: 'Resource',
+                    name: 'resource',
+                    type: 'options',
+                    noDataExpression: true,
+                    options: [
+                        {
+                            name: 'Tmpfile',
+                            value: 'tmpfiles',
+                        },
+                    ],
+                    default: 'tmpfiles',
+                },
+                {
+                    displayName: 'Operation',
+                    name: 'operation',
+                    type: 'options',
+                    noDataExpression: true,
+                    displayOptions: {
+                        show: {
+                            resource: ['tmpfiles'],
+                        },
+                    },
+                    options: [
+                        {
+                            name: 'Upload',
+                            value: 'upload',
+                            action: 'Upload file to tmpfiles',
+                        },
+                    ],
+                    default: 'upload',
+                },
                 {
                     displayName: 'Name',
                     name: 'name',
@@ -90,6 +122,4 @@ class Tmpfiles {
     }
 }
 exports.Tmpfiles = Tmpfiles;
-exports.default = Tmpfiles;
-module.exports = { Tmpfiles };
 //# sourceMappingURL=Tmpfiles.node.js.map

@@ -1,11 +1,11 @@
-import { type INodeType, type INodeTypeDescription, type IExecuteFunctions, type INodeExecutionData, type IDataObject, IHttpRequestOptions, NodeOperationError } from 'n8n-workflow';
+import { type INodeType, type INodeTypeDescription, type IExecuteFunctions, type INodeExecutionData, type IDataObject, IHttpRequestOptions, NodeOperationError, NodeConnectionTypes } from 'n8n-workflow';
 type BinaryBuffer = { length: number };
 declare const Buffer: {
     from(input: string, encoding: string): BinaryBuffer;
     concat(chunks: Array<unknown>): BinaryBuffer;
 };
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare const module: any;
+ 
+
 
 export class Tmpfiles implements INodeType {
 	description: INodeTypeDescription = {
@@ -14,20 +14,52 @@ export class Tmpfiles implements INodeType {
 		icon: 'file:tmpfilesLogo_main.svg',
 		group: ['transform'],
 		version: 1,
-		subtitle: 'File Upload',
+		subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
 		description: 'Upload files to Tmpfiles and get a temporary URL',
 		defaults: {
 			name: 'Tmpfiles',
 		},
 		usableAsTool: true,
-		inputs: ['main'],
-		outputs: ['main'],
+		inputs: [NodeConnectionTypes.Main],
+		outputs: [NodeConnectionTypes.Main],
 		credentials: [],
 		requestDefaults: {
 			baseURL: 'https://tmpfiles.org/api/v1/upload',
 			method: 'POST',
 		},
 		properties: [
+			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'Tmpfile',
+						value: 'tmpfiles',
+					},
+				],
+				default: 'tmpfiles',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['tmpfiles'],
+					},
+				},
+				options: [
+					{
+						name: 'Upload',
+						value: 'upload',
+						action: 'Upload file to tmpfiles',
+					},
+				],
+				default: 'upload',
+			},
 			{
 				displayName: 'Name',
 				name: 'name',
@@ -107,8 +139,3 @@ export class Tmpfiles implements INodeType {
 		return [returnData];
 	}
 }
-
-// Ensure compatibility with n8n loader in isolated VM
-export default Tmpfiles;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(module as any).exports = { Tmpfiles };
